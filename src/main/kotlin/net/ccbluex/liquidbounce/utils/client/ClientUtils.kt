@@ -24,6 +24,7 @@ import net.minecraft.util.Util
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.io.File
+import java.net.URI
 
 /**
  * Get a [Logger] with client name prefix
@@ -58,6 +59,11 @@ fun browseUrl(url: String) {
 
     Util.getPlatform().openUri(url)
 }
+
+/**
+ * Open uri in browser ([URI] overload).
+ */
+fun browseUrl(url: URI) = browseUrl(url.toString())
 
 /**
  * Open a directory in the system file manager.
