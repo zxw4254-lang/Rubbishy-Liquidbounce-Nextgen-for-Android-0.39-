@@ -214,9 +214,9 @@ import net.ccbluex.liquidbounce.features.module.modules.render.ModuleMobOwners
 import net.ccbluex.liquidbounce.features.module.modules.render.ModuleNewChunks
 import net.ccbluex.liquidbounce.features.module.modules.render.ModuleNoBob
 import net.ccbluex.liquidbounce.features.module.modules.render.ModuleNoFov
-import net.ccbluex.liquidbounce.features.module.modules.render.ModuleNotifications
 import net.ccbluex.liquidbounce.features.module.modules.render.ModuleNoHurtCam
 import net.ccbluex.liquidbounce.features.module.modules.render.ModuleNoSwing
+import net.ccbluex.liquidbounce.features.module.modules.render.ModuleNotifications
 import net.ccbluex.liquidbounce.features.module.modules.render.ModuleParticles
 import net.ccbluex.liquidbounce.features.module.modules.render.ModuleProphuntESP
 import net.ccbluex.liquidbounce.features.module.modules.render.ModuleProtectionZones
