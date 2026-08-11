@@ -35,6 +35,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.render
 
+import net.ccbluex.liquidbounce.config.types.list.Tagged
 import net.ccbluex.liquidbounce.event.events.ModuleToggleEvent
 import net.ccbluex.liquidbounce.event.events.OverlayRenderEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -45,6 +46,10 @@ import net.ccbluex.liquidbounce.render.drawRoundedRect
 import net.ccbluex.liquidbounce.render.engine.type.Color4b
 import net.ccbluex.liquidbounce.render.withPush
 import net.ccbluex.liquidbounce.utils.client.mc
+import net.minecraft.client.resources.sounds.SimpleSoundInstance
+import net.minecraft.resources.Identifier
+import net.minecraft.sounds.SoundEvent
+import net.minecraft.sounds.SoundEvents
 import kotlin.math.exp
 import kotlin.math.roundToInt
 
@@ -74,6 +79,17 @@ object ModuleNotifications : ClientModule("Notifications", ModuleCategories.REND
 
     private class AnimState(var x: Float)
 
+    /* ============================= 通知音效 ============================= */
+
+    private enum class NotificationSound(override val tag: String) : Tagged {
+        NONE("None"),
+        CLICK("Click"),
+        POP("Pop"),
+        CHIME("Chime"),
+        LEVELUP("LevelUp"),
+        CUSTOM("Custom"),
+    }
+
     /* ============================= 可调节项 ============================= */
 
     // —— 布局 ——
@@ -101,6 +117,16 @@ object ModuleNotifications : ClientModule("Notifications", ModuleCategories.REND
     private val animationSpeed by float("Animation Speed", 8f, 0.5f..30f)
     private val defaultDuration by int("Default Duration", 3000, 500..10000)  // 毫秒
     private val welcomeNotification by boolean("Welcome Notification", true)   // 启用时发送欢迎通知
+
+    // —— 通知音效 (按类型区分) ——
+    private val enableSound by enumChoice("Enable Sound", NotificationSound.CLICK)    // 模块开启 (SUCCESS)
+    private val disableSound by enumChoice("Disable Sound", NotificationSound.POP)    // 模块关闭 (ERROR)
+    private val infoSound by enumChoice("Info Sound", NotificationSound.NONE)         // 普通通知 (INFO/WARNING)
+    private val soundVolume by float("Sound Volume", 1f, 0.1f..2f)
+    // 自定义音效的资源 ID (对应 assets/liquidbounce/sounds/<name>.ogg)
+    private val enableCustomId by text("Enable Custom ID", "liquidbounce:enable")
+    private val disableCustomId by text("Disable Custom ID", "liquidbounce:disable")
+    private val infoCustomId by text("Info Custom ID", "liquidbounce:info")
 
     // —— 模块开关通知 ——
     private val moduleToggleNotifications by boolean("Module Toggle Notifications", true)
@@ -131,6 +157,49 @@ object ModuleNotifications : ClientModule("Notifications", ModuleCategories.REND
             animations.remove(removed)
         }
         notifications.add(0, Notification(title, description, type, duration))
+        playNotificationSound(type)
+    }
+
+    /** 播放通知音效 (按通知类型区分: 开启/关闭/普通), 原版 SoundManager, 不依赖 Web */
+    private fun playNotificationSound(type: NotificationType) {
+        val sound: NotificationSound
+        val customId: String
+        when (type) {
+            NotificationType.SUCCESS -> {
+                sound = enableSound          // 模块开启
+                customId = enableCustomId
+            }
+            NotificationType.ERROR -> {
+                sound = disableSound         // 模块关闭
+                customId = disableCustomId
+            }
+            NotificationType.INFO, NotificationType.WARNING -> {
+                sound = infoSound
+                customId = infoCustomId
+            }
+        }
+        if (sound == NotificationSound.NONE) {
+            return
+        }
+        val volume = soundVolume
+        val instance = when (sound) {
+            NotificationSound.NONE -> return
+            // UI_BUTTON_CLICK 是 Holder 重载
+            NotificationSound.CLICK -> SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1f)
+            NotificationSound.POP -> SimpleSoundInstance.forUI(SoundEvents.UI_TOAST_IN, 1f, volume)
+            NotificationSound.CHIME -> SimpleSoundInstance.forUI(SoundEvents.EXPERIENCE_ORB_PICKUP, 1f, volume)
+            NotificationSound.LEVELUP -> SimpleSoundInstance.forUI(SoundEvents.PLAYER_LEVELUP, 1f, volume)
+            // 自定义音效: 使用对应类型的 Custom ID
+            NotificationSound.CUSTOM -> {
+                val event = try {
+                    SoundEvent.createVariableRangeEvent(Identifier.parse(customId))
+                } catch (_: Exception) {
+                    return
+                }
+                SimpleSoundInstance.forUI(event, 1f, volume)
+            }
+        }
+        mc.soundManager.play(instance)
     }
 
     /** 清空全部通知 */
