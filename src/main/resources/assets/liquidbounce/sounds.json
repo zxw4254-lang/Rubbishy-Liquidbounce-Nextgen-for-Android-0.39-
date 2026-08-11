@@ -106,5 +106,14 @@
   },
   "tf2-crit": {
     "sounds": ["liquidbounce:tf2-crit"]
+  },
+  "enable": {
+    "sounds": ["liquidbounce:enable"]
+  },
+  "disable": {
+    "sounds": ["liquidbounce:disable"]
+  },
+  "info": {
+    "sounds": ["liquidbounce:info"]
   }
 }
