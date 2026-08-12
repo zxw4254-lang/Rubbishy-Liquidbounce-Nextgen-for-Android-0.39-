@@ -227,6 +227,7 @@ import net.ccbluex.liquidbounce.features.module.modules.render.ModuleSilentHotba
 import net.ccbluex.liquidbounce.features.module.modules.render.ModuleSkinChanger
 import net.ccbluex.liquidbounce.features.module.modules.render.ModuleSmoothCamera
 import net.ccbluex.liquidbounce.features.module.modules.render.ModuleStatusBars
+import net.ccbluex.liquidbounce.features.module.modules.render.ModuleSolsticeArraylist
 import net.ccbluex.liquidbounce.features.module.modules.render.ModuleStorageESP
 import net.ccbluex.liquidbounce.features.module.modules.render.ModuleTargetInfo
 import net.ccbluex.liquidbounce.features.module.modules.render.ModuleTNTTimer
