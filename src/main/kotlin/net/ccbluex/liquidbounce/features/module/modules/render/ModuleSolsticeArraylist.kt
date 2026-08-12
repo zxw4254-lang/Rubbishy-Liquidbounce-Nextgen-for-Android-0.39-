@@ -223,7 +223,7 @@ object ModuleSolsticeArraylist : ClientModule(
         val guiWidth = ctx.guiWidth()
 
         // 逐字符彩虹水印 (原版: 每字符 getThemedColor(i*100))
-        var x = guiWidth - rightOffset
+        var x = (guiWidth - rightOffset).toFloat()
         for (i in watermarkText.indices) {
             val ch = watermarkText[i].toString()
             val charW = font.width(ch).toFloat()
